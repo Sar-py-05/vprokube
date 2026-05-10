@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: vproapp-service
+spec:
+  type: ClusterIP # Optional: ClusterIP is the default type
+  selector:
+    app: vproapp # Must match labels on the target Pods
+  ports:
+    - protocol: TCP
+      port: 8080 # The port the service listens on inside the cluster
+      targetPort: vproapp-port
+      type: ClusterIP # Optional: ClusterIP is the default type

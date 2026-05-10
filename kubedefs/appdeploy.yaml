@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vproapp
+  labels:
+    app: vproapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vproapp
+  template:
+    metadata:
+      labels:
+        app: vproapp
+    spec:
+      containers:
+        - name: vproapp
+          image: aroy0509/vprofileapp
+          ports:
+            - name: vproapp-port
+              containerPort: 8080
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "200m"
+      initContainers:
+        - name: init-myservice
+          image: busybox:1.28
+          command:
+            [
+              "sh",
+              "-c",
+              "until nslookup vprodb.$(cat
+                /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cl\
+                uster.local; do echo waiting for vprodb; sleep 2; done",
+            ]
+        - name: init-rabbitmq
+          image: busybox:1.28
+          command:
+            [
+              "sh",
+              "-c",
+              "until nslookup vpromq01.$(cat
+                /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cl\
+                uster.local; do echo waiting for vpromq01; sleep 2; done",
+            ]
