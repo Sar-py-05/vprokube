@@ -4,41 +4,52 @@ metadata:
   name: vprodb
   labels:
     app: vprodb
+
 spec:
   replicas: 1
+
   selector:
     matchLabels:
       app: vprodb
+
   template:
     metadata:
       labels:
         app: vprodb
+
     spec:
-      containers:
-      - name: vprofiledb
-        image: aroy0509/vprofiledb
-        volumeMounts:
-        -mountPath: /var/lib/mysql
-          name: vpro-db-data  
-        ports:
-        - name: vprodb-port
-          containerPort: 3306
-        
-        env:
-        - name: MYSQL_ROOT_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: app-secret
-              key: db-pass
-      volumes:
-      - name: vpro-db-data
-        persistentVolumeClaim:
-          claimName: db-pv-claim
       initContainers:
-      - name: busybox
-        image: busybox:latest
-        args: ["rm", "-rf", "/var/lib/mysql/lost+found"]
-        volumeMounts:
+        - name: init-db
+          image: busybox:latest
+          command:
+            - sh
+            - -c
+            - rm -rf /var/lib/mysql/lost+found
+
+          volumeMounts:
+            - name: vpro-db-data
+              mountPath: /var/lib/mysql
+
+      containers:
+        - name: vprodb
+          image: vprocontainers/vprofiledb
+
+          ports:
+            - name: vprodb-port
+              containerPort: 3306
+
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: db-pass
+
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: vpro-db-data
+
+      volumes:
         - name: vpro-db-data
-          mountPath: /var/lib/mysql
-        
+          persistentVolumeClaim:
+            claimName: db-pv-claim

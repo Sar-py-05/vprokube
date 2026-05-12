@@ -3,11 +3,10 @@ kind: Service
 metadata:
   name: vprodb
 spec:
-  type: ClusterIP # Optional: ClusterIP is the default type
-  selector:
-    app: vprodb # Must match labels on the target Pods
   ports:
-    - protocol: TCP
-      port: 3306 # The port the service listens on inside the cluster
-      targetPort: vprodb-port
-      type: ClusterIP # Optional: ClusterIP is the default type
+  - port: 3306
+    targetPort: vprodb-port
+    protocol: TCP
+  selector:
+    app: vprodb
+  type: ClusterIP
