@@ -9,7 +9,7 @@ spec:
   ingressClassName: nginx
 
   rules:
-    - host: vprofile.hkhinfoteck.xyz
+    - host: kubepro.hkhsinfo.shop
       http:
         paths:
           - path: /
