@@ -10,6 +10,6 @@ spec:
     app: vpromc
 
   ports:
-    - port: 11211
+    - protocol: TCP
+      port: 11211
       targetPort: vpromc-port
-      protocol: TCP
