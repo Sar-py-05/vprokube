@@ -1,189 +1,342 @@
 # vProfile Application Deployment on Kubernetes using kOps on AWS
 
-## Project Overview
+---
 
-This project demonstrates the deployment of the **vProfile Java Enterprise Application** on a production-grade **Kubernetes cluster** provisioned on **Amazon Web Services (AWS)** using **kOps**.
+# Project Overview
 
-The objective of this project was to gain hands-on experience in provisioning a Kubernetes cluster on AWS, deploying a multi-tier application using Kubernetes manifests, configuring persistent storage, exposing the application through an NGINX Ingress Controller, integrating DNS using Route53, and troubleshooting real-world deployment issues encountered during the implementation.
+This project demonstrates the complete deployment of the **vProfile Java Enterprise Application** on a **production-style Kubernetes cluster** provisioned using **kOps** on **Amazon Web Services (AWS)**.
 
-Unlike local Kubernetes environments such as Minikube or Kind, this project provisions actual AWS infrastructure consisting of EC2 instances, Elastic Block Storage (EBS), Route53, Elastic Load Balancer (ELB), and Amazon S3 for the kOps state store. This closely resembles the architecture used in enterprise production environments.
+Unlike local Kubernetes environments such as Minikube or Kind, this project provisions a highly available Kubernetes cluster on AWS infrastructure and deploys a multi-tier Java application using native Kubernetes resources.
 
-The deployed application consists of multiple interconnected services:
+The deployment includes:
 
-- Java Web Application (vProfile)
-- MySQL Database
+- Kubernetes Cluster Provisioned using kOps
+- NGINX Ingress Controller
+- Multi-tier Java Web Application
+- MySQL Database with Persistent Storage
 - RabbitMQ Message Broker
 - Memcached Caching Layer
+- Kubernetes Services
+- Persistent Volume Claims
+- Kubernetes Secrets
+- DNS Integration
+- AWS Elastic Load Balancer
 
-Each component is deployed as an independent Kubernetes Deployment and exposed internally through Kubernetes Services. The application is made accessible externally through an NGINX Ingress Controller backed by an AWS Classic Load Balancer.
-
-By completing this project, I gained practical experience with Kubernetes administration, cluster provisioning, application deployment, service networking, persistent storage, ingress configuration, DNS integration, and production troubleshooting.
+This project closely resembles how enterprise applications are deployed in production Kubernetes environments.
 
 ---
 
 # Project Objectives
 
-The primary objectives of this project were to:
+The primary objectives of this project were:
 
-- Provision a Kubernetes cluster on AWS using kOps.
-- Configure kubectl to communicate with the newly created cluster.
-- Deploy the NGINX Ingress Controller.
-- Deploy MySQL using Persistent Volume Claims.
-- Deploy RabbitMQ and Memcached.
-- Deploy the vProfile Java web application.
-- Configure Kubernetes Services for internal communication.
-- Configure Kubernetes Ingress for external access.
-- Integrate Route53 DNS with the Ingress Load Balancer.
-- Validate the complete deployment.
-- Troubleshoot and resolve deployment issues.
-- Synchronize the final project with GitHub using SSH authentication.
+- Provision Kubernetes Cluster on AWS using kOps
+- Configure kubectl access
+- Deploy NGINX Ingress Controller
+- Deploy MySQL Database
+- Configure Persistent Storage
+- Deploy RabbitMQ
+- Deploy Memcached
+- Deploy Java Web Application
+- Configure Kubernetes Services
+- Configure Kubernetes Ingress
+- Configure DNS Mapping
+- Validate Complete Application Deployment
+- Practice Kubernetes Troubleshooting
+- Learn Production Deployment Workflow
 
 ---
 
-# Project Architecture
+# Architecture Overview
 
-The application follows a standard three-tier architecture deployed on Kubernetes.
+The architecture consists of four major layers.
 
-```
+## Infrastructure Layer
 
-```
-                        Internet
-                            │
-                            │
-                   Route53 DNS Record
-                            │
-                            │
-                 AWS Elastic Load Balancer
-                            │
-                            │
-               NGINX Ingress Controller
-                            │
-                            │
-                  Kubernetes Ingress
-                            │
-                            │
-                vproapp-service (ClusterIP)
-                            │
-                            │
-                  vProfile Application Pod
-                    │         │         │
-                    │         │         │
-                    ▼         ▼         ▼
-               MySQL      RabbitMQ   Memcached
-                 │
-                 ▼
-        Persistent Volume Claim
-                 │
-                 ▼
-             Amazon EBS Volume
+- AWS EC2 Instances
+- Amazon Route53
+- AWS Elastic Load Balancer
+- AWS S3 (kOps State Store)
+- Amazon EBS Volumes
 
-```
+---
 
-The Kubernetes cluster itself is provisioned using **kOps**, which automates the creation and management of AWS infrastructure required for Kubernetes.
+## Kubernetes Layer
+
+- Kubernetes Control Plane
+- Worker Nodes
+- Pods
+- Deployments
+- Services
+- Persistent Volume Claims
+- Secrets
+- Ingress Controller
+
+---
+
+## Application Layer
+
+- vProfile Application
+- MySQL Database
+- RabbitMQ
+- Memcached
+
+---
+
+## Client Layer
+
+User
+
+↓
+
+DNS
+
+↓
+
+AWS Load Balancer
+
+↓
+
+NGINX Ingress
+
+↓
+
+vProfile Service
+
+↓
+
+vProfile Pod
+
+↓
+
+MySQL
+
+RabbitMQ
+
+Memcached
 
 ---
 
 # Technology Stack
 
-This project uses the following technologies.
-
-### Cloud Platform
-
-- Amazon Web Services (AWS)
-
-### Kubernetes
-
-- Kubernetes
-- kOps
-- kubectl
-
-### Networking
-
-- Route53
-- AWS Classic Load Balancer
-- NGINX Ingress Controller
-
-### Storage
-
-- Amazon EBS
-- Persistent Volume Claim (PVC)
-
-### Application Components
-
-- Java (vProfile)
-- MySQL
-- RabbitMQ
-- Memcached
-
-### Source Control
-
-- Git
-- GitHub
-- SSH Authentication
-
-### Operating System
-
-- Ubuntu Linux
+| Category | Technology |
+|----------|------------|
+| Cloud Provider | AWS |
+| Kubernetes Provisioning | kOps |
+| Container Runtime | containerd |
+| Orchestration | Kubernetes |
+| Ingress | NGINX Ingress Controller |
+| Application | Java (vProfile) |
+| Database | MySQL |
+| Cache | Memcached |
+| Messaging | RabbitMQ |
+| Storage | Amazon EBS |
+| DNS | Route53 |
+| Version Control | Git |
+| Repository | GitHub |
+| OS | Ubuntu Linux |
+| CLI Tools | kubectl, kops |
 
 ---
 
-# AWS Services Used
+# Kubernetes Resources Created
 
-The following AWS services were provisioned during this project.
+The following Kubernetes resources were created during this project.
 
-| Service | Purpose |
-|----------|---------|
-| EC2 | Kubernetes Control Plane and Worker Nodes |
-| VPC | Network Isolation |
-| Internet Gateway | Internet Connectivity |
-| Route Tables | Routing Configuration |
-| Security Groups | Firewall Rules |
-| Route53 | DNS Management |
-| Elastic Load Balancer | External Access |
-| Amazon EBS | Persistent Storage |
-| Amazon S3 | kOps State Store |
-| IAM | Authentication and Authorization |
-
----
-
-# Kubernetes Components
-
-The following Kubernetes resources were created during this deployment.
-
-## Deployments
+### Deployments
 
 - vproapp
 - vprodb
 - vpromc
 - vprormq
 
-## Services
+---
+
+### Services
 
 - vproapp-service
 - vprodb
 - vprocache01
 - vprormq01
 
-## Storage
+---
 
-- Persistent Volume Claim
-- Dynamic EBS Volume
+### Ingress
 
-## Networking
+- vpro-ingress
 
+---
+
+### Persistent Volume Claim
+
+- db-pv-claim
+
+---
+
+### Secret
+
+- app-secret
+
+---
+
+### Namespace
+
+- default
+- ingress-nginx
+- kube-system
+- kube-public
+- kube-node-lease
+
+---
+
+# AWS Resources Used
+
+The deployment utilized the following AWS services.
+
+- EC2
+- VPC
+- Internet Gateway
+- Route Tables
+- Security Groups
+- Route53
+- Elastic Load Balancer
+- Amazon EBS
+- Amazon S3
+- IAM
+
+---
+
+# Deployment Workflow
+
+The deployment followed the sequence below.
+
+```
+Provision AWS Infrastructure
+            │
+            ▼
+Create Kubernetes Cluster using kOps
+            │
+            ▼
+Export kubectl Configuration
+            │
+            ▼
+Validate Cluster
+            │
+            ▼
+Install NGINX Ingress Controller
+            │
+            ▼
+Create Persistent Volume Claim
+            │
+            ▼
+Create Kubernetes Secret
+            │
+            ▼
+Deploy Database
+            │
+            ▼
+Deploy RabbitMQ
+            │
+            ▼
+Deploy Memcached
+            │
+            ▼
+Deploy Application
+            │
+            ▼
+Create Kubernetes Services
+            │
+            ▼
+Create Kubernetes Ingress
+            │
+            ▼
+Configure DNS
+            │
+            ▼
+Application Available
+```
+
+---
+
+# Major Learning Outcomes
+
+This project provided practical experience in:
+
+- Kubernetes Architecture
+- Cluster Provisioning using kOps
+- kubectl Administration
+- Deployments
+- Services
 - Ingress
-- NGINX Ingress Controller
+- Persistent Volumes
+- Persistent Volume Claims
+- Kubernetes Secrets
+- Init Containers
+- Service Discovery
+- DNS Configuration
+- Storage Management
+- AWS Load Balancer Integration
+- YAML Debugging
+- Kubernetes Troubleshooting
+- Git Repository Synchronization
+- Git Rebase Conflict Resolution
+- SSH Authentication with GitHub
 
-## Security
+---
 
-- Kubernetes Secret
+# Challenges Faced
+
+Several real-world issues were encountered and resolved during this project.
+
+- Forgot to create Kubernetes cluster before deploying Ingress
+- kubectl connection refused
+- YAML indentation errors
+- Incorrect Service definitions
+- Invalid Service field placement
+- Ingress YAML parsing errors
+- Deployment YAML syntax issues
+- Init Container waiting indefinitely
+- RabbitMQ service naming mismatch
+- OOMKilled due to insufficient memory allocation
+- Git merge conflicts during rebase
+- GitHub HTTPS authentication issue
+- Migrated repository authentication to SSH
+
+These issues have been documented in detail within the project documentation.
+
+---
+
+# Project Validation
+
+The deployment was successfully validated.
+
+Validation included:
+
+- Kubernetes Cluster Ready
+- Worker Nodes Healthy
+- Control Plane Healthy
+- Ingress Controller Running
+- PVC Bound Successfully
+- Database Running
+- RabbitMQ Running
+- Memcached Running
+- Application Running
+- Services Accessible
+- Ingress Created
+- DNS Working
+- Application Accessible through Browser
+
+Application URL:
+
+```
+http://vprofile.hkhsinfo.shop/welcome
+```
 
 ---
 
 # Repository Structure
 
 ```
-
 vprokube/
 
 ├── Docker-files/
@@ -207,34 +360,71 @@ vprokube/
 ├── runbook.md
 ├── troubleshooting-guide.md
 └── lessons-learned.md
-
 ```
-
-The `kubedefs` directory contains all Kubernetes resource definitions required for deploying the complete application stack.
-
-The repository also contains detailed project documentation covering the architecture, deployment procedure, troubleshooting steps, operational runbook, and lessons learned throughout the implementation.
 
 ---
 
-# Deployment Workflow
+# Documentation
 
-The deployment followed the sequence shown below.
+This repository contains detailed documentation for every stage of the project.
 
-1. Provision AWS infrastructure using kOps.
-2. Export the Kubernetes configuration.
-3. Validate the cluster.
-4. Install the NGINX Ingress Controller.
-5. Create the Persistent Volume Claim.
-6. Create Kubernetes Secrets.
-7. Deploy MySQL.
-8. Deploy RabbitMQ.
-9. Deploy Memcached.
-10. Deploy the vProfile application.
-11. Create Kubernetes Services.
-12. Create the Kubernetes Ingress.
-13. Configure Route53 DNS.
-14. Validate the application deployment.
-15. Troubleshoot deployment issues.
-16. Synchronize the project repository with GitHub.
+| Document | Description |
+|----------|-------------|
+| README.md | Project Overview |
+| architecture.md | Complete Architecture Explanation |
+| deployment-guide.md | Step-by-Step Deployment Guide |
+| runbook.md | Operational Procedures |
+| troubleshooting-guide.md | Errors Encountered and Fixes |
+| lessons-learned.md | Knowledge Gained Throughout the Project |
 
-Each deployment stage was validated before proceeding to the next, ensuring that dependencies such as the database, message broker, and cache were available before the application container started.
+---
+
+# Skills Demonstrated
+
+- AWS
+- Kubernetes
+- kOps
+- Linux Administration
+- Networking
+- DNS
+- Persistent Storage
+- Container Orchestration
+- Kubernetes Services
+- Ingress Controller
+- YAML Authoring
+- Git
+- GitHub
+- SSH Authentication
+- Production Troubleshooting
+- Infrastructure Provisioning
+
+---
+
+# Future Improvements
+
+Possible enhancements include:
+
+- Helm Charts
+- Horizontal Pod Autoscaler
+- Metrics Server
+- Prometheus Monitoring
+- Grafana Dashboards
+- ArgoCD
+- GitOps Workflow
+- TLS Certificates using cert-manager
+- ExternalDNS
+- AWS ALB Ingress Controller
+- CI/CD Pipeline Integration
+- Automated Backup Strategy
+- Multi-AZ Cluster Deployment
+- High Availability Database
+
+---
+
+# Author
+
+**Abhishek Roy**
+
+DevOps | Cloud | Kubernetes | AWS | CI/CD | Linux
+
+This repository documents a complete hands-on deployment of a production-style Kubernetes application on AWS using kOps while following industry-standard deployment, troubleshooting, validation, and documentation practices.
